@@ -19,15 +19,20 @@ repositories {
 	mavenCentral()
 }
 
+// Version Catalogs are recommended version to keep decoupled dependencies with theirs versions.
+// In order to spare time I will leave hardcoded versions here
 dependencies {
 //	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.zalando:logbook-spring-boot-starter:3.12.0")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.testcontainers:junit-jupiter")
+
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

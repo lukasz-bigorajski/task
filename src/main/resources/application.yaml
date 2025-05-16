@@ -1,1 +1,13 @@
 spring.application.name: task
+
+logbook:
+  predicate:
+    exclude:
+      - path: /actuator/health
+      - path: /v3/api-docs/**
+      - path: /swagger-ui/**
+      - path: /
+  format:
+    style: http
+logging.level:
+  org.zalando.logbook: TRACE

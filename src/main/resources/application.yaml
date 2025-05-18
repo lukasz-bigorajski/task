@@ -1,9 +1,24 @@
-spring.application.name: task
+spring:
+  application.name: task
+  jpa:
+    properties:
+      hibernate:
+        dialect: "org.hibernate.dialect.PostgreSQLDialect"
+        hbm2ddl:
+          auto: none
+  liquibase:
+    change-log: classpath:liquibase/db-changelog.xml
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      idle-timeout: 60000
+      minimum-idle: 1
+      maximum-pool-size: 4
 
 logbook:
   predicate:
     exclude:
-      - path: /actuator/health
       - path: /v3/api-docs/**
       - path: /swagger-ui/**
       - path: /

@@ -3,6 +3,8 @@ package com.example.task.application
 import com.example.task.presentation.api.BusinessException
 import com.example.task.presentation.api.ExceptionResponse
 import com.example.task.presentation.api.NotFoundException
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
@@ -59,9 +61,13 @@ class ExceptionHandler {
         }
     }
 
-    private fun getHttpMessageExceptionDetails(ex: HttpMessageNotReadableException): String {
-        // todo: check it
-        return "abc"
-    }
+    private fun getHttpMessageExceptionDetails(ex: HttpMessageNotReadableException): String =
+        when (val cause = ex.cause) {
+            is MissingKotlinParameterException ->
+                "Required field: [${cause.parameter.name}] is missing"
+            is InvalidFormatException ->
+                "${cause.value} is not a valid value for object of type ${cause.targetType?.simpleName}"
+            else -> "Http message is not readable"
+        }
 
 }

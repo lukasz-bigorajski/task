@@ -30,7 +30,7 @@ class ComplaintController(private val complaintApiHttpService: ComplaintApiHttpS
         @RequestBody @Valid request: CreateComplaintRequest,
         @RequestHeader("X-Forwarded-For", required = false) forwardForHeader: String?,
     ) {
-        complaintApiHttpService.createComplaint(request, null)
+        complaintApiHttpService.createComplaint(request, forwardForHeader)
     }
 
     @PatchMapping

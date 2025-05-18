@@ -3,6 +3,7 @@ package com.example.task.application
 import com.example.task.presentation.api.BusinessException
 import com.example.task.presentation.api.ExceptionResponse
 import com.example.task.presentation.api.NotFoundException
+import com.example.task.presentation.api.ResourceException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import org.springframework.core.Ordered
@@ -23,7 +24,7 @@ class ExceptionHandler {
     @ExceptionHandler
     @ResponseBody
     fun handleBusinessException(ex: BusinessException): ResponseEntity<ExceptionResponse> {
-        val response = toResponse(ex.message ?: "")
+        val response = ExceptionResponse(ex.message ?: "")
         return when(ex) {
             is NotFoundException -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(response)
             else -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response)
@@ -31,11 +32,19 @@ class ExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseBody
+    fun handleResourceException(ex: ResourceException): ResponseEntity<ExceptionResponse> {
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ExceptionResponse(ex.message ?: ""))
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     fun handleBindException(ex: MethodArgumentNotValidException): ExceptionResponse {
         val invalidFieldsMessage = ex.formatFieldErrorsMessage()
-        return toResponse(invalidFieldsMessage)
+        return toInvalidFieldsMessageResponse(invalidFieldsMessage)
     }
 
     @ExceptionHandler
@@ -43,10 +52,10 @@ class ExceptionHandler {
     @ResponseBody
     fun handleBindException(ex: HttpMessageNotReadableException): ExceptionResponse {
         val exceptionMessage = getHttpMessageExceptionDetails(ex)
-        return toResponse(exceptionMessage)
+        return toInvalidFieldsMessageResponse(exceptionMessage)
     }
 
-    private fun toResponse(invalidFieldsMessage: String): ExceptionResponse = ExceptionResponse(
+    private fun toInvalidFieldsMessageResponse(invalidFieldsMessage: String): ExceptionResponse = ExceptionResponse(
         message = """
             Received invalid request.
             Details:

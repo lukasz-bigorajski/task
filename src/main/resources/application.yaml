@@ -26,3 +26,9 @@ logbook:
     style: http
 logging.level:
   org.zalando.logbook: TRACE
+
+restclient:
+  ipapi:
+    uri: "http://ip-api.com/json/"
+    connectionTimeout: 5s
+    readTimeout: 5s

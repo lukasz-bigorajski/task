@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.springframework.http.HttpHeaders
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Clock
@@ -29,6 +30,28 @@ class ComplaintControllerTest : BaseSpringUnitTest() {
     fun setUp() {
         Mockito.`when`(clock.zone).thenReturn(ClockProvider.ZONE_ID)
         Mockito.`when`(clock.instant()).thenReturn(mockedDateTime)
+    }
+
+    @Test
+    fun `should create a complaint with country code fetched`() {
+        val reporterId = UUID.randomUUID().toString()
+        val productId = UUID.randomUUID().toString()
+        val request = """
+            {
+                "reporterId": "$reporterId",
+                "productId": "$productId",
+                "content": "some complain comment"
+            }""".trimIndent()
+
+        val httpHeaders = HttpHeaders().also { it.add("X-Forwarded-For", "24.48.0.1") }
+        val result = mvc.perform(postRawRequest(baseUrl, request).headers(httpHeaders))
+
+        result.andExpect(status().isCreated)
+        complaintDbAsserts
+            .assertThatComplaint(reporterId, productId)
+            .hasCounter(1)
+            .hasContent("some complain comment")
+            .hasCountry("Canada")
     }
 
     @Test

@@ -149,6 +149,26 @@ class ComplaintControllerTest : BaseSpringUnitTest() {
     }
 
     @Test
+    fun `should return bad request on missing complaint for content patch`() {
+        val reporterId = UUID.randomUUID().toString()
+        val productId = UUID.randomUUID().toString()
+        val patchRequest = """
+            {
+                "reporterId": "$reporterId",
+                "productId": "$productId",
+                "content": "updated complain comment"
+            }""".trimIndent()
+
+        val result = mvc.perform(patchRawRequest(baseUrl, patchRequest))
+            .andExpect(status().isNotFound)
+
+        assertThat(result.andReturn().toExceptionResponse())
+            .isEqualTo(
+                ExceptionResponse("Cannot find complaint")
+            )
+    }
+
+    @Test
     fun `should return error on missing field during complaint creation`() {
         val request = """
             {

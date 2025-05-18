@@ -16,3 +16,4 @@
 8. I added db asserts in tests to indicate that I met requirements. There are different approaches to test applications
    and one is to test only via API (true integration tests) but I decided to show that everything is correctly saved in
    db.
+9. In tests instead of invoking target REST service I would add the wiremock and mock http calls. 
